@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>جدول الأوف الأسبوعي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --ink-2:#33456B;
+    --paper:#F7F5F0;
+    --card:#FFFFFF;
+    --gold:#C9A227;
+    --gold-deep:#8A6D14;
+    --line:#DDD8CB;
+    --danger:#B14A3F;
+    --ok:#2F6B4F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Tajawal',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    padding:28px 18px 60px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+  .top{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:3px solid var(--ink);
+    padding-bottom:16px;margin-bottom:26px;
+    flex-wrap:wrap;gap:10px;
+  }
+  h1{
+    font-family:'Cairo',sans-serif;
+    font-weight:900;
+    font-size:28px;
+    margin:0;
+    letter-spacing:-.5px;
+  }
+  .sub{font-size:14px;color:var(--ink-2);margin-top:4px;}
+  .stamp{
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    color:var(--gold-deep);
+    border:2px solid var(--gold);
+    border-radius:6px;
+    padding:6px 12px;
+    transform:rotate(-2deg);
+    white-space:nowrap;
+  }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:22px;
+  }
+  .panel h2{
+    font-family:'Cairo',sans-serif;
+    font-size:17px;
+    font-weight:700;
+    margin:0 0 14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .panel h2 .n{
+    background:var(--ink);color:#fff;
+    width:24px;height:24px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;
+  }
+
+  label{font-size:13px;color:var(--ink-2);display:block;margin-bottom:6px;}
+  input[type=text]{
+    width:100%;padding:10px 12px;border:1px solid var(--line);
+    border-radius:8px;font-family:'Tajawal',sans-serif;font-size:15px;
+    background:#fff;color:var(--ink);
+  }
+  input[type=text]:focus{outline:2px solid var(--gold);border-color:var(--gold);}
+
+  .days{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:10px;margin-top:14px;
+  }
+  .day-card{
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:12px 10px;
+    cursor:pointer;
+    text-align:center;
+    transition:.12s;
+    background:#fff;
+    user-select:none;
+  }
+  .day-card:hover{border-color:var(--ink-2);}
+  .day-card.selected{
+    border-color:var(--gold-deep);
+    background:#FBF4E0;
+  }
+  .day-card.full{
+    opacity:.5;cursor:not-allowed;background:#F2F0EA;
+  }
+  .day-name{font-family:'Cairo',sans-serif;font-weight:700;font-size:15px;}
+  .day-slots{font-size:12px;color:var(--ink-2);margin-top:6px;}
+  .dots{display:flex;justify-content:center;gap:4px;margin-top:8px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--line);}
+  .dot.filled{background:var(--gold-deep);}
+
+  button{
+    font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;
+    border:none;border-radius:8px;padding:11px 22px;
+    cursor:pointer;transition:.12s;
+  }
+  .btn-main{background:var(--ink);color:#fff;margin-top:16px;}
+  .btn-main:hover{background:var(--ink-2);}
+  .btn-main:disabled{background:#B4B2A9;cursor:not-allowed;}
+  .btn-ghost{background:transparent;color:var(--danger);border:1px solid var(--danger);font-size:12px;padding:6px 12px;}
+  .btn-link{background:transparent;color:var(--ink-2);border:1px solid var(--line);font-size:12px;padding:6px 12px;}
+
+  .msg{font-size:13px;margin-top:10px;padding:9px 12px;border-radius:8px;display:none;}
+  .msg.show{display:block;}
+  .msg.err{background:#FBE9E7;color:var(--danger);}
+  .msg.ok{background:#E7F2EB;color:var(--ok);}
+
+  table{width:100%;border-collapse:collapse;margin-top:6px;}
+  th,td{text-align:right;padding:9px 8px;font-size:14px;border-bottom:1px solid var(--line);}
+  th{color:var(--ink-2);font-weight:500;font-size:12px;}
+  .badge{
+    display:inline-block;font-size:11px;font-weight:700;
+    padding:2px 8px;border-radius:20px;
+  }
+  .badge.avail{background:#E7F2EB;color:var(--ok);}
+  .badge.full{background:#FBE9E7;color:var(--danger);}
+
+  .empty{color:var(--ink-2);font-size:13px;text-align:center;padding:14px;}
+  .foot{font-size:11px;color:var(--ink-2);text-align:center;margin-top:30px;}
+
+  #setup-panel{display:none;}
+  #main-app{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div>
+      <h1>جدول الأوف الأسبوعي</h1>
+      <div class="sub">اختار يومك المفضل — الأسبق بيحجز مكانه</div>
+    </div>
+    <div class="stamp" id="capacity-stamp">جاري التحميل...</div>
+  </div>
+
+  <div class="panel" id="setup-panel">
+    <h2><span class="n">!</span> ضبط الاتصال بالشيت (مرة واحدة بس)</h2>
+    <label for="url-input">رابط Web App اللي اتنسخ من Google Apps Script</label>
+    <input type="text" id="url-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" autocomplete="off">
+    <button class="btn-main" id="save-url-btn">حفظ والبدء</button>
+    <div class="msg" id="setup-msg"></div>
+  </div>
+
+  <div id="main-app">
+    <div class="panel">
+      <h2><span class="n">1</span> بيانات الموظف</h2>
+      <label for="name-input">الاسم</label>
+      <input type="text" id="name-input" placeholder="اكتب اسمك زي ما هيتسجل" autocomplete="off">
+
+      <div style="margin-top:18px;">
+        <label>اختار يومين أوف من الأسبوع</label>
+        <div class="days" id="days-grid"></div>
+      </div>
+
+      <div class="msg" id="msg-box"></div>
+      <button class="btn-main" id="submit-btn" disabled>احجز الأيام دي</button>
+    </div>
+
+    <div class="panel">
+      <h2><span class="n">2</span> الحجوزات الحالية</h2>
+      <div id="table-wrap"></div>
+      <div style="margin-top:14px;display:flex;justify-content:flex-start;">
+        <button class="btn-link" id="refresh-btn">تحديث</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    بيانات الحجز متخزنة في Google Sheet مشترك — أي حد يفتح الملف من أي جهاز هيشوف نفس البيانات.
+    <br>
+    <span id="change-url-link" style="cursor:pointer;text-decoration:underline;">تغيير رابط الشيت</span>
+  </div>
+</div>
+
+<script>
+const DAYS = ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+const REQUIRED = 2;
+const LS_KEY = 'off-days-sheet-url';
+
+let API_URL = localStorage.getItem(LS_KEY) || '';
+let CAPACITIES = {};
+let bookings = {};
+let selected = new Set();
+
+function capacityFor(day){ return CAPACITIES[day] || 3; }
+function dayCount(day){ return (bookings[day]||[]).length; }
+function isFull(day){ return dayCount(day) >= capacityFor(day); }
+function myExistingDays(name){
+  const mine = [];
+  for(const d of DAYS){
+    if((bookings[d]||[]).some(e => e.name === name)) mine.push(d);
+  }
+  return mine;
+}
+
+async function apiGet(){
+  const res = await fetch(API_URL + '?t=' + Date.now(), { method: 'GET', cache: 'no-store' });
+  return await res.json();
+}
+async function apiPost(payload){
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  return await res.json();
+}
+
+function rowsToBookings(rows){
+  const b = {};
+  (rows||[]).forEach(r => {
+    if(!b[r.day]) b[r.day] = [];
+    b[r.day].push({ name: r.name, ts: r.ts });
+  });
+  return b;
+}
+
+async function loadBookings(){
+  document.getElementById('capacity-stamp').textContent = 'جاري التحميل...';
+  try{
+    const data = await apiGet();
+    if(!data.ok) throw new Error('bad response');
+    CAPACITIES = data.capacities || {};
+    bookings = rowsToBookings(data.rows);
+    document.getElementById('capacity-stamp').textContent = 'الكابستي بيختلف حسب اليوم';
+    render();
+  }catch(e){
+    document.getElementById('capacity-stamp').textContent = 'مفيش اتصال';
+    showMsg('مقدرش أوصل للشيت. تأكد من الرابط والصلاحيات (Anyone can access).', 'err');
+  }
+}
+
+function showMsg(text, type){
+  const box = document.getElementById('msg-box');
+  box.textContent = text;
+  box.className = 'msg show ' + type;
+}
+function clearMsg(){
+  document.getElementById('msg-box').className = 'msg';
+}
+
+function renderDays(){
+  const grid = document.getElementById('days-grid');
+  grid.innerHTML = '';
+  DAYS.forEach(day => {
+    const cap = capacityFor(day);
+    const count = dayCount(day);
+    const full = isFull(day) && !selected.has(day);
+    const card = document.createElement('div');
+    card.className = 'day-card' + (selected.has(day) ? ' selected' : '') + (full ? ' full' : '');
+    let dots = '';
+    for(let i=0;i<cap;i++){
+      dots += `<span class="dot${i<count?' filled':''}"></span>`;
+    }
+    card.innerHTML = `
+      <div class="day-name">${day}</div>
+      <div class="dots">${dots}</div>
+      <div class="day-slots">${count}/${cap} محجوز</div>
+    `;
+    card.onclick = () => toggleDay(day);
+    grid.appendChild(card);
+  });
+}
+
+function toggleDay(day){
+  clearMsg();
+  if(selected.has(day)){
+    selected.delete(day);
+  } else {
+    if(isFull(day)){
+      showMsg('اليوم ده كامل العدد بالفعل.', 'err');
+      return;
+    }
+    if(selected.size >= REQUIRED){
+      showMsg(`تقدر تختار ${REQUIRED} أيام بس.`, 'err');
+      return;
+    }
+    selected.add(day);
+  }
+  renderDays();
+  updateSubmitState();
+}
+
+function updateSubmitState(){
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = selected.size !== REQUIRED || !document.getElementById('name-input').value.trim();
+}
+
+function renderTable(){
+  const wrap = document.getElementById('table-wrap');
+  const hasAny = DAYS.some(d => dayCount(d) > 0);
+  if(!hasAny){
+    wrap.innerHTML = '<div class="empty">لسه محدش حجز أي يوم.</div>';
+    return;
+  }
+  let rows = '';
+  DAYS.forEach(day => {
+    const cap = capacityFor(day);
+    const list = bookings[day] || [];
+    const names = list.length ? list.map(e => e.name).join('، ') : '—';
+    const badge = list.length >= cap
+      ? '<span class="badge full">كامل</span>'
+      : `<span class="badge avail">${cap - list.length} فاضي</span>`;
+    rows += `<tr><td>${day}</td><td>${names}</td><td>${badge}</td></tr>`;
+  });
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>اليوم</th><th>الموظفين</th><th>الحالة</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function render(){
+  renderDays();
+  renderTable();
+  updateSubmitState();
+}
+
+document.getElementById('name-input').addEventListener('input', () => {
+  clearMsg();
+  updateSubmitState();
+});
+
+document.getElementById('submit-btn').addEventListener('click', async () => {
+  const name = document.getElementById('name-input').value.trim();
+  if(!name){ showMsg('اكتب الاسم الأول.', 'err'); return; }
+  if(selected.size !== REQUIRED){ showMsg(`اختار ${REQUIRED} أيام.`, 'err'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'جاري الحجز...';
+
+  try{
+    const result = await apiPost({ action: 'add', name, days: [...selected] });
+    if(result.ok){
+      showMsg(`تم الحجز يا ${name}! أيامك: ${[...selected].join(' و')}.`, 'ok');
+      selected.clear();
+      document.getElementById('name-input').value = '';
+      await loadBookings();
+    } else if(result.error === 'day_full'){
+      showMsg(`للأسف يوم ${result.day} اتحجز خلاص من حد تاني، اختار يوم بديل.`, 'err');
+      await loadBookings();
+    } else if(result.error === 'duplicate_name'){
+      showMsg(`الاسم "${name}" له حجز بالفعل. لو غيرت رأيك، صفّر الحجوزات أو استخدم اسم مختلف.`, 'err');
+      await loadBookings();
+    } else {
+      showMsg('حصل خطأ، حاول تاني.', 'err');
+    }
+  }catch(e){
+    showMsg('مقدرش أوصل للشيت، تأكد من الاتصال بالنت.', 'err');
+  }finally{
+    btn.textContent = 'احجز الأيام دي';
+    updateSubmitState();
+  }
+});
+
+document.getElementById('refresh-btn').addEventListener('click', loadBookings);
+
+document.getElementById('save-url-btn').addEventListener('click', () => {
+  const url = document.getElementById('url-input').value.trim();
+  if(!url.startsWith('https://script.google.com/')){
+    document.getElementById('setup-msg').textContent = 'الرابط لازم يبدأ بـ https://script.google.com/';
+    document.getElementById('setup-msg').className = 'msg show err';
+    return;
+  }
+  localStorage.setItem(LS_KEY, url);
+  API_URL = url;
+  startApp();
+});
+
+document.getElementById('change-url-link').addEventListener('click', () => {
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('setup-panel').style.display = 'block';
+  document.getElementById('url-input').value = API_URL;
+});
+
+function startApp(){
+  document.getElementById('setup-panel').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  loadBookings();
+}
+
+if(API_URL){
+  startApp();
+} else {
+  document.getElementById('setup-panel').style.display = 'block';
+  document.getElementById('capacity-stamp').textContent = 'محتاج إعداد';
+}
+</script>
+</body>
+</html>
